@@ -4,12 +4,12 @@ extends Spatial
 var tran
 var osc_t = 0
 export var osc = false
-export(int, 0 , 2) var osc_axis = 0
+export(int, "X", "Y", "Z") var osc_axis = 0
 export var osc_distance = 10.0
 export var osc_speed = 2.0
 
 export var rotate = false
-export(int, 0 , 2) var rot_axis = 0
+export(int, "X", "Y", "Z") var rot_axis = 0
 export var rot_speed = 2.0
 
 func _ready():
