@@ -234,11 +234,77 @@ func update(delta):
 				instance.set_color(c)
 				instance.set_uv(Vector2(uvRatio2,uvRatio))
 				instance.add_vertex(t.xform(_v))
+			else: #begining cap
+				var p2 = points[i+1]
+				var t = p.transform.looking_at(p2.transform.origin,Vector3(0,1,0))
+				var fn = t.basis.xform(Vector3(0,0,1))
+				
+				for s in range(segments,0,-1):
+					
+					var _v = segPos(s,width)
+					var v1 = t.xform(_v)
+					var n = t.basis.xform(((_v+fn)/2).normalized())
+					
+					instance.set_normal(fn)
+					instance.set_color(c)
+					instance.set_uv(Vector2(0,0))
+					instance.add_vertex(t.origin)
+					
+					instance.set_normal(n)
+					instance.set_color(c)
+					instance.set_uv(Vector2(0,uvRatio))
+					instance.add_vertex(v1)
 				
 				
+				var _v = segPos(0,width)
+				var v1 = t.xform(_v)
+				var n = t.basis.xform(((_v+fn)/2).normalized())
 				
+				instance.set_normal(fn)
+				instance.set_color(c)
+				instance.set_uv(Vector2(0,0))
+				instance.add_vertex(t.origin)
 				
+				instance.set_normal(n)
+				instance.set_color(c)
+				instance.set_uv(Vector2(0,uvRatio))
+				instance.add_vertex(v1)
+					
+			#end cap
+			if(i == pointCount-1):
+				var p2 = points[pointCount-2]
+				var t = p2.transform.looking_at(p.transform.origin,Vector3(0,1,0))
+				var fn = t.basis.xform(Vector3(0,0,1))
+			
+				for s in range(segments):
 				
+					var _v = segPos(s,width)
+					var v1 = t.xform(_v)
+					var n = t.basis.xform(((_v+fn)/2).normalized())
+					
+					instance.set_normal(fn)
+					instance.set_color(c)
+					instance.set_uv(Vector2(0,0))
+					instance.add_vertex(t.origin)
+					
+					instance.set_normal(n)
+					instance.set_color(c)
+					instance.set_uv(Vector2(0,uvRatio))
+					instance.add_vertex(v1)
+				
+				var _v = segPos(0,width)
+				var v1 = t.xform(_v)
+				var n = t.basis.xform(((_v+fn)/2).normalized())
+				
+				instance.set_normal(t.basis.xform(Vector3(0,0,1)))
+				instance.set_color(c)
+				instance.set_uv(Vector2(0,0))
+				instance.add_vertex(t.origin)
+				
+				instance.set_normal(n)
+				instance.set_color(c)
+				instance.set_uv(Vector2(0,uvRatio))
+				instance.add_vertex(v1)
 	instance.end()
 
 
