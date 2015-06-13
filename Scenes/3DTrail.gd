@@ -38,8 +38,20 @@ class Point:
 	var timeAlive = 0
 	var fadeAlpha = 0
 	var transform = Transform()
+	
+	var ratio = 0
+	var width = 0
+	
 	func set(trans = Transform()):
 		transform = trans
+	func getRatio(lifeTime):
+		ratio = 0
+		if(lifeTime > 0):
+			ratio = timeAlive / lifeTime
+		return ratio
+	func getWidth(sw,ew):
+		width = lerp(sw,ew,ratio)
+		return width
 		
 func Angle(mat1,mat2):
 	var v1 = mat1.get_euler()
@@ -74,7 +86,12 @@ func insertPoint():
 	points.insert(0,Point.new());
 	points[0].set(get_global_transform())
 	pointCount+=1
-		
+
+func segPos(s,width):
+	var x = cos(2 * PI * s / segments) * width/2
+	var y = sin(2 * PI * s / segments) * width/2
+	return Vector3(x,y,0)
+
 func update(delta):
 	instance.set_global_transform(Transform())
 	#emit
@@ -143,11 +160,8 @@ func update(delta):
 	
 	for i in range(pointCount):
 		var p = points[i]
-		var ratio = 0
-		if(lifeTime > 0):
-			ratio = p.timeAlive / lifeTime
-		
-		var width = lerp(startWidth,endWidth,ratio)
+		var ratio = p.getRatio(lifeTime)
+		var width = p.getWidth(startWidth,endWidth)
 		
 		var uvRatio = (p.timeAlive - points[0].timeAlive)*uvMultiplier
 		var c = Color(startColor.to_html()).linear_interpolate(endColor,uvRatio)
@@ -179,24 +193,19 @@ func update(delta):
 					var next = points[i+1]
 					t = t.looking_at(next.transform.origin,Vector3(0,1,0))
 				
-				var ratio2 = 0
-				if(lifeTime > 0):
-					ratio2 = p.timeAlive / lifeTime
-				var width2 = lerp(startWidth,endWidth,ratio2)
+				var ratio2 = p2.getRatio(lifeTime)
+				var width2 = p2.getWidth(startWidth,endWidth)
 				
 				var uvRatio2 = (p2.timeAlive - points[0].timeAlive)*uvMultiplier
 				var c2 = Color(startColor.to_html()).linear_interpolate(endColor,uvRatio2)
 				
-				for i in range(segments,0,-1):
-					var x = cos(2 * PI * i / segments) * width/2
-					var y = sin(2 * PI * i / segments) * width/2
-					var _v = Vector3(x,y,0)
+				for s in range(segments,0,-1):
+					
+					var _v = segPos(s,width)
 					var v1 = t.xform(_v)
 					var n = t.basis.xform(_v.normalized())
 					
-					var x2 = cos(2 * PI * i / segments) * width2/2
-					var y2 = sin(2 * PI * i / segments) * width2/2
-					var _v2 = Vector3(x2,y2,0)
+					var _v2 = segPos(s,width2)
 					var v2 = t2.xform(_v2)
 					var n2 = t2.basis.xform(_v2.normalized())
 					
@@ -210,18 +219,14 @@ func update(delta):
 					instance.set_uv(Vector2(uvRatio2,uvRatio))
 					instance.add_vertex(v1)
 				
-				var x = cos(0) * width2/2
-				var y = sin(0) * width2/2
-				var _v = Vector3(x,y,0)
+				var _v = segPos(0,width2)
 				
 				instance.set_normal(t2.basis.xform(_v.normalized()))
 				instance.set_color(c)
 				instance.set_uv(Vector2(uvRatio2,uvRatio))
 				instance.add_vertex(t2.xform(_v))
 				
-				var x = cos(0) * width/2
-				var y = sin(0) * width/2
-				var _v = Vector3(x,y,0)
+				var _v = segPos(0,width)
 				
 				instance.set_normal(t.basis.xform(_v.normalized()))
 				instance.set_color(c)
