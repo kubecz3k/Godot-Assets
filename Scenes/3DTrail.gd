@@ -6,7 +6,6 @@ var instance = ImmediateGeometry.new()
 
 export var tube = false
 export var segments = 4
-export var tip_length = 1
 
 export(bool) var emit = true
 var emittingDone = false;
@@ -192,6 +191,9 @@ func update(delta):
 				if(i < pointCount-1):
 					var next = points[i+1]
 					t = t.looking_at(next.transform.origin,Vector3(0,1,0))
+				else:
+					var last = points[i-1]
+					t = last.transform.looking_at(t.origin,Vector3(0,1,0))
 				
 				var ratio2 = p2.getRatio(lifeTime)
 				var width2 = p2.getWidth(startWidth,endWidth)
