@@ -2,6 +2,10 @@
 extends Node2D
 
 export(Texture) var texture
+export var flipH = false
+export var flipV = false
+
+
 export(Color) var color
 var instance = Polygon2D.new()
 
@@ -197,10 +201,15 @@ func update_polygon(delta):
 		
 		if(texture):
 			uvw = uvRatio*texture.get_width()
+			if(flipH):
+				uvw = (1-uvRatio)*texture.get_width()
 			uvh = texture.get_height()
 		
 		var uv1 = Vector2(uvw,0)
 		var uv2 = Vector2(uvw,uvh)
+		if(flipV):
+			uv2 = Vector2(uvw,0)
+			uv1 = Vector2(uvw,uvh)
 		
 		p.vectors = [v1,v2]
 		p.uvs = [uv1,uv2]
