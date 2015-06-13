@@ -6,6 +6,7 @@ var instance = ImmediateGeometry.new()
 
 export var tube = false
 export var segments = 4
+export var cap_pointyness = 0.0
 
 export(bool) var emit = true
 var emittingDone = false;
@@ -248,7 +249,7 @@ func update(delta):
 					instance.set_normal(fn)
 					instance.set_color(c)
 					instance.set_uv(Vector2(0,0))
-					instance.add_vertex(t.origin)
+					instance.add_vertex(t.origin+(fn*cap_pointyness*(1-ratio)))
 					
 					instance.set_normal(n)
 					instance.set_color(c)
@@ -263,7 +264,7 @@ func update(delta):
 				instance.set_normal(fn)
 				instance.set_color(c)
 				instance.set_uv(Vector2(0,0))
-				instance.add_vertex(t.origin)
+				instance.add_vertex(t.origin+(fn*cap_pointyness*(1-ratio)))
 				
 				instance.set_normal(n)
 				instance.set_color(c)
@@ -274,7 +275,7 @@ func update(delta):
 			if(i == pointCount-1):
 				var p2 = points[pointCount-2]
 				var t = p2.transform.looking_at(p.transform.origin,Vector3(0,1,0))
-				var fn = t.basis.xform(Vector3(0,0,1))
+				var fn = t.basis.xform_inv(Vector3(0,0,1))
 			
 				for s in range(segments):
 				
@@ -285,7 +286,7 @@ func update(delta):
 					instance.set_normal(fn)
 					instance.set_color(c)
 					instance.set_uv(Vector2(0,0))
-					instance.add_vertex(t.origin)
+					instance.add_vertex(t.origin+(fn*cap_pointyness*(1-ratio)))
 					
 					instance.set_normal(n)
 					instance.set_color(c)
@@ -296,10 +297,10 @@ func update(delta):
 				var v1 = t.xform(_v)
 				var n = t.basis.xform(((_v+fn)/2).normalized())
 				
-				instance.set_normal(t.basis.xform(Vector3(0,0,1)))
+				instance.set_normal(fn)
 				instance.set_color(c)
 				instance.set_uv(Vector2(0,0))
-				instance.add_vertex(t.origin)
+				instance.add_vertex(t.origin+(fn*cap_pointyness*(1-ratio)))
 				
 				instance.set_normal(n)
 				instance.set_color(c)
