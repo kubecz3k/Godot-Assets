@@ -73,7 +73,37 @@ func _ready():
 	instance.set_material_override(material)
 	optCount = optimizeCount
 
+#public
+func startEmit():
+	emit = true;
+	emittingDone = false;
+	set_process(true);
+	
+#public
+func stopEmit():
+	emit = false;
+	emittingDone = false;
+
+#needed because in update the last point is never cleaned, also we can turn off processing here
+func turnOffLastPoitCheck(delta): 
+	if(pointCount==1) && (!emit) && (emittingDone):
+		points[0].timeAlive += delta;
+		if(points[0].timeAlive > lifeTime):
+			rebuild();
+			points.remove(0)
+			pointCount-=1
+			set_process(false);
+
+func processLastOnePoint(delta):
+	var p= points[0]
+	if(p == null || p.timeAlive > lifeTime):
+		points.remove(0)
+		pointCount-=1
+	else:
+		p.timeAlive += delta
+
 func _process(delta):
+	turnOffCompletelyCheck(delta)
 	update(delta)
 	
 	
@@ -146,7 +176,9 @@ func update(delta):
 	if(pointCount < 2):
 		return
 	
-	#rebuild
+	rebuild()
+
+func rebuild():
 	var alivedif = (points[pointCount-1].timeAlive - points[0].timeAlive)
 	var uvMultiplier = 0
 	if(alivedif != 0):
@@ -164,7 +196,7 @@ func update(delta):
 		var width = p.getWidth(startWidth,endWidth)
 		
 		var uvRatio = (p.timeAlive - points[0].timeAlive)*uvMultiplier
-		var c = Color(startColor.to_html()).linear_interpolate(endColor,uvRatio)
+		var c = Color(startColor.r, startColor.g, startColor.b, startColor.a).linear_interpolate(endColor,uvRatio)
 		
 		if(segments <= 2 || tube == false):
 			var _v = Vector3(0,width/2,0)
