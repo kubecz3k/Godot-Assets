@@ -85,7 +85,7 @@ func stopEmit():
 	emittingDone = false;
 
 #needed because in update the last point is never cleaned, also we can turn off processing here
-func turnOffLastPoitCheck(delta): 
+func turnOffLastPointCheck(delta): 
 	if(pointCount==1) && (!emit) && (emittingDone):
 		points[0].timeAlive += delta;
 		if(points[0].timeAlive > lifeTime):
@@ -94,18 +94,9 @@ func turnOffLastPoitCheck(delta):
 			pointCount-=1
 			set_process(false);
 
-func processLastOnePoint(delta):
-	var p= points[0]
-	if(p == null || p.timeAlive > lifeTime):
-		points.remove(0)
-		pointCount-=1
-	else:
-		p.timeAlive += delta
-
 func _process(delta):
-	turnOffCompletelyCheck(delta)
+	turnOffLastPointCheck(delta)
 	update(delta)
-	
 	
 func addPoint():
 	points.append(Point.new())
